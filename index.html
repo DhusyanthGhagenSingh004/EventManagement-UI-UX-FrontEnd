@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html class="scroll-smooth light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Eventix | Premium Event Management Platform</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind CSS CDN with Plugins -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#4d41df",
+            "primary-container": "#675df9",
+            "on-primary": "#ffffff",
+            "secondary": "#0057c2",
+            "surface": "#f8f9fc",
+            "surface-container": "#edeef1",
+            "surface-container-high": "#e7e8eb",
+            "surface-container-highest": "#e1e2e5",
+            "on-surface": "#191c1e",
+            "on-surface-variant": "#464555",
+            "outline-variant": "#c7c4d8",
+            "outline": "#777587"
+          },
+          fontFamily: {
+            "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"]
+          },
+          borderRadius: {
+            "xl": "16px",
+            "2xl": "24px"
+          },
+          spacing: {
+            "margin-desktop": "40px",
+            "margin-mobile": "16px",
+            "container-max": "1440px"
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary/20 flex flex-col min-h-screen">
+
+  <!-- Toast Notification -->
+  <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-6 py-4 rounded-xl bg-on-surface text-white shadow-2xl">
+    <span class="material-symbols-outlined text-green-400" id="toast-icon">check_circle</span>
+    <span id="toast-message" class="font-label-md">Action completed successfully!</span>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/20 shadow-sm h-20">
+    <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-full w-full max-w-container-max mx-auto">
+      <div class="flex items-center gap-8 md:gap-12">
+        <a href="#landing" onclick="navigateTo('landing')" class="flex items-center gap-2 text-decoration-none">
+          <div class="w-10 h-10 rounded-xl brand-gradient-bg flex items-center justify-center text-white font-bold text-xl shadow-md">E</div>
+          <span class="font-display-lg text-headline-md font-extrabold text-primary tracking-tight">Eventix</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+          <a href="#explore" onclick="navigateTo('explore')" id="nav-explore" class="nav-link font-label-md text-on-surface-variant hover:text-primary transition-colors py-2 border-b-2 border-transparent">Explore</a>
+          <a href="#features" onclick="navigateTo('features')" id="nav-features" class="nav-link font-label-md text-on-surface-variant hover:text-primary transition-colors py-2 border-b-2 border-transparent">Features</a>
+          <a href="#pricing" onclick="navigateTo('pricing')" id="nav-pricing" class="nav-link font-label-md text-on-surface-variant hover:text-primary transition-colors py-2 border-b-2 border-transparent">Pricing</a>
+          <a href="#about" onclick="navigateTo('about')" id="nav-about" class="nav-link font-label-md text-on-surface-variant hover:text-primary transition-colors py-2 border-b-2 border-transparent">About</a>
+          <a href="#contact" onclick="navigateTo('contact')" id="nav-contact" class="nav-link font-label-md text-on-surface-variant hover:text-primary transition-colors py-2 border-b-2 border-transparent">Support</a>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-3 md:gap-4">
+        <div id="auth-buttons-logged-out" class="flex items-center gap-3">
+          <button onclick="navigateTo('login')" class="font-label-md text-on-surface-variant hover:text-primary px-4 py-2 transition-colors">Login</button>
+          <button onclick="navigateTo('signup')" class="hidden sm:block border border-primary/30 text-primary hover:bg-primary/5 px-5 py-2 rounded-full font-label-md transition-all">Sign Up</button>
+        </div>
+        <div id="auth-buttons-logged-in" class="hidden flex items-center gap-3">
+          <span class="text-sm font-medium text-on-surface-variant hidden lg:inline">Welcome, <strong id="user-display-name">Organizer</strong></span>
+          <button onclick="logoutUser()" class="text-xs text-red-600 hover:underline">Logout</button>
+        </div>
+        <button onclick="navigateTo('dashboard')" class="brand-gradient-bg text-on-primary px-5 py-2.5 rounded-full font-label-md text-label-md shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-transform flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">dashboard</span>
+          <span class="hidden sm:inline">Dashboard</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="pt-20 flex-grow">
+
+    <!-- 1. LANDING PAGE VIEW -->
+    <section id="view-landing" class="view-screen active">
+      <!-- Hero Section -->
+      <section class="relative min-h-[85vh] flex items-center justify-center overflow-hidden px-margin-mobile md:px-margin-desktop py-12">
+        <div class="absolute inset-0 z-0 bg-gradient-to-b from-primary/5 via-surface to-surface"></div>
+        <div class="relative z-10 max-w-4xl text-center">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-primary/20 text-primary font-label-md text-label-sm mb-8 animate-float shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">verified</span>
+            Trusted by 10,000+ global organizers
+          </div>
+          <h1 class="font-display-lg text-4xl sm:text-5xl md:text-6xl font-extrabold text-on-surface mb-6 leading-tight">
+            Experience Events in a <span class="brand-gradient-text">New Dimension</span>
+          </h1>
+          <p class="font-body-lg text-lg sm:text-xl text-on-surface-variant mb-10 max-w-2xl mx-auto">
+            The premium all-in-one platform for creating, managing, and attending high-impact events. Built for visionary creators.
+          </p>
+          
+          <!-- Hero Search Bar -->
+          <div class="glass-card p-3 rounded-2xl flex flex-col md:flex-row gap-3 max-w-3xl mx-auto shadow-2xl border border-white/60">
+            <div class="flex-1 flex items-center px-4 gap-3 border-b md:border-b-0 md:border-r border-outline-variant/30 py-3 md:py-0">
+              <span class="material-symbols-outlined text-primary">search</span>
+              <input id="hero-search-query" type="text" class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-on-surface-variant/70 font-body-md" placeholder="Search tech, music, business events..."/>
+            </div>
+            <div class="flex-1 flex items-center px-4 gap-3 py-3 md:py-0">
+              <span class="material-symbols-outlined text-primary">location_on</span>
+              <input id="hero-search-location" type="text" class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-on-surface-variant/70 font-body-md" placeholder="San Francisco, NY, London..."/>
+            </div>
+            <button onclick="handleHeroSearch()" class="brand-gradient-bg text-on-primary px-8 py-4 rounded-xl font-label-md flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md">
+              <span>Find Events</span>
+              <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Featured Events Section -->
+      <section class="py-16 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 gap-4">
+          <div>
+            <h2 class="font-headline-lg text-3xl font-bold text-on-surface mb-2">Featured Experiences</h2>
+            <p class="font-body-md text-on-surface-variant">Handpicked premium events happening this week.</p>
+          </div>
+          <button onclick="navigateTo('explore')" class="text-primary font-label-md flex items-center gap-2 group hover:underline">
+            View all events <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+          </button>
+        </div>
+
+        <div id="landing-featured-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Featured Event Cards injected dynamically -->
+        </div>
+      </section>
+
+      <!-- Bento Category Grid Section -->
+      <section class="py-16 bg-surface-container/40 px-margin-mobile md:px-margin-desktop">
+        <div class="max-w-container-max mx-auto">
+          <div class="text-center mb-12">
+            <h2 class="font-headline-lg text-3xl font-bold mb-3">Discover by Category</h2>
+            <p class="font-body-md text-on-surface-variant">Whatever your passion, we have extraordinary experiences waiting.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 min-h-[500px]">
+            <div onclick="filterCategoryAndNavigate('Entertainment')" class="sm:col-span-2 rounded-2xl bg-primary-container relative group overflow-hidden cursor-pointer shadow-md min-h-[220px]">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent group-hover:bg-black/50 transition-colors z-10"></div>
+              <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80" alt="Entertainment"/>
+              <div class="absolute bottom-6 left-6 z-20 text-white">
+                <span class="text-xs uppercase font-bold tracking-wider text-primary-container bg-white px-3 py-1 rounded-full mb-2 inline-block">Popular</span>
+                <h3 class="font-headline-md text-2xl font-bold">Music & Entertainment</h3>
+                <p class="text-white/80 text-sm">1,240 Events</p>
+              </div>
+            </div>
+
+            <div onclick="filterCategoryAndNavigate('Business')" class="rounded-2xl bg-secondary relative group overflow-hidden cursor-pointer shadow-md min-h-[220px]">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent group-hover:bg-black/50 transition-colors z-10"></div>
+              <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80" alt="Business"/>
+              <div class="absolute bottom-6 left-6 z-20 text-white">
+                <h3 class="font-headline-md text-xl font-bold">Business & Tech</h3>
+                <p class="text-white/80 text-sm">850 Events</p>
+              </div>
+            </div>
+
+            <div onclick="filterCategoryAndNavigate('Lifestyle')" class="rounded-2xl bg-surface relative group overflow-hidden cursor-pointer shadow-md min-h-[220px]">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent group-hover:bg-black/50 transition-colors z-10"></div>
+              <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1469488865564-c2de10f69f96?auto=format&fit=crop&w=800&q=80" alt="Lifestyle"/>
+              <div class="absolute bottom-6 left-6 z-20 text-white">
+                <h3 class="font-headline-md text-xl font-bold">Art & Lifestyle</h3>
+                <p class="text-white/80 text-sm">320 Events</p>
+              </div>
+            </div>
+
+            <div onclick="filterCategoryAndNavigate('Food & Drink')" class="rounded-2xl bg-surface-container-highest relative group overflow-hidden cursor-pointer shadow-md min-h-[220px]">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent group-hover:bg-black/50 transition-colors z-10"></div>
+              <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Food & Drink"/>
+              <div class="absolute bottom-6 left-6 z-20 text-white">
+                <h3 class="font-headline-md text-xl font-bold">Food & Gastronomy</h3>
+                <p class="text-white/80 text-sm">540 Events</p>
+              </div>
+            </div>
+
+            <div onclick="filterCategoryAndNavigate('Sports')" class="sm:col-span-2 md:col-span-3 rounded-2xl bg-primary relative group overflow-hidden cursor-pointer shadow-md min-h-[220px]">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent group-hover:bg-black/50 transition-colors z-10"></div>
+              <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80" alt="Sports"/>
+              <div class="absolute bottom-6 left-6 z-20 text-white">
+                <h3 class="font-headline-md text-2xl font-bold">Sports & Fitness Summit</h3>
+                <p class="text-white/80 text-sm">900 Events</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Platform Features Preview -->
+      <section class="py-16 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-4">Powerful Features</div>
+            <h2 class="font-headline-lg text-3xl md:text-4xl font-extrabold text-on-surface mb-6">Empowering Organizers to <span class="brand-gradient-text">Lead & Scale</span></h2>
+            <div class="space-y-6">
+              <div class="flex gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined">analytics</span>
+                </div>
+                <div>
+                  <h3 class="font-headline-md font-bold text-lg mb-1">Real-time Analytics</h3>
+                  <p class="text-on-surface-variant text-sm">Track ticket sales, revenue graphs, attendance velocity, and peak booking times instantly.</p>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined">confirmation_number</span>
+                </div>
+                <div>
+                  <h3 class="font-headline-md font-bold text-lg mb-1">Smart QR Ticketing</h3>
+                  <p class="text-on-surface-variant text-sm">Dynamic tier pricing, custom promo codes, instant email passes, and high-speed QR mobile check-in.</p>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-primary-container/10 text-primary-container flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined">groups</span>
+                </div>
+                <div>
+                  <h3 class="font-headline-md font-bold text-lg mb-1">Community Growth Tools</h3>
+                  <p class="text-on-surface-variant text-sm">Engage attendees with interactive Q&A, newsletter broadcasts, and post-event feedback surveys.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6 border border-outline-variant/30 shadow-2xl relative">
+            <div class="bg-surface-container rounded-xl p-4 mb-4 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                <span class="text-xs text-on-surface-variant font-mono">dashboard_analytics.eventix</span>
+              </div>
+              <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">Live Data</span>
+            </div>
+            <div class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-outline-variant/20 shadow-sm">
+                  <p class="text-xs text-on-surface-variant">Total Gross Sales</p>
+                  <p class="text-2xl font-bold text-primary mt-1">$128,450.00</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-outline-variant/20 shadow-sm">
+                  <p class="text-xs text-on-surface-variant">Check-in Rate</p>
+                  <p class="text-2xl font-bold text-emerald-600 mt-1">94.8%</p>
+                </div>
+              </div>
+              <div class="bg-white p-4 rounded-xl border border-outline-variant/20 shadow-sm">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-bold text-on-surface">Ticket Velocity</span>
+                  <span class="text-xs text-primary font-bold">142 tickets/hr</span>
+                </div>
+                <div class="w-full bg-surface-container h-3 rounded-full overflow-hidden">
+                  <div class="brand-gradient-bg h-full w-[78%] rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+
+    <!-- 2. EXPLORE EVENTS VIEW -->
+    <section id="view-explore" class="view-screen">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+          <div>
+            <h1 class="font-display-lg text-3xl sm:text-4xl font-extrabold text-on-surface mb-2">Explore Events</h1>
+            <p class="text-on-surface-variant text-base">Find conferences, concerts, workshops, and exclusive VIP gatherings.</p>
+          </div>
+          <div class="relative w-full md:w-96">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input id="explore-search-input" oninput="applyFilters()" type="text" class="w-full pl-12 pr-4 py-3 bg-white border border-outline-variant/40 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm" placeholder="Search by title, location, category..."/>
+          </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+          <!-- Filter Sidebar -->
+          <aside class="w-full lg:w-72 shrink-0">
+            <div class="bg-white rounded-2xl p-6 border border-outline-variant/30 shadow-sm sticky top-24 space-y-6">
+              <div class="flex items-center justify-between pb-4 border-b border-outline-variant/20">
+                <h3 class="font-headline-md font-bold text-lg text-on-surface">Filters</h3>
+                <button onclick="resetFilters()" class="text-primary text-xs font-bold hover:underline">Reset All</button>
+              </div>
+
+              <!-- Categories -->
+              <div>
+                <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-3">Category</label>
+                <div class="space-y-2">
+                  <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" name="cat-filter" value="All" checked onchange="applyFilters()" class="text-primary focus:ring-primary/20"/>
+                    <span class="text-sm font-medium text-on-surface">All Categories</span>
+                  </label>
+                  <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" name="cat-filter" value="Tech" onchange="applyFilters()" class="text-primary focus:ring-primary/20"/>
+                    <span class="text-sm font-medium text-on-surface">Tech & Innovation</span>
+                  </label>
+                  <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" name="cat-filter" value="Music" onchange="applyFilters()" class="text-primary focus:ring-primary/20"/>
+                    <span class="text-sm font-medium text-on-surface">Music & Festivals</span>
+                  </label>
+                  <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" name="cat-filter" value="Lifestyle" onchange="applyFilters()" class="text-primary focus:ring-primary/20"/>
+                    <span class="text-sm font-medium text-on-surface">Art & Lifestyle</span>
+                  </label>
+                  <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" name="cat-filter" value="Business" onchange="applyFilters()" class="text-primary focus:ring-primary/20"/>
+                    <span class="text-sm font-medium text-on-surface">Business & Finance</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Price Filter -->
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <label class="text-xs uppercase tracking-wider text-on-surface-variant font-bold">Max Price</label>
+                  <span id="price-slider-val" class="text-xs font-bold text-primary">$500</span>
+                </div>
+                <input id="price-slider" type="range" min="0" max="500" value="500" step="25" oninput="updatePriceSlider(this.value)" class="w-full accent-primary cursor-pointer"/>
+              </div>
+
+              <!-- Location Filter -->
+              <div>
+                <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-2">Location</label>
+                <select id="location-select" onchange="applyFilters()" class="w-full bg-surface border border-outline-variant/40 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-primary/20">
+                  <option value="All">All Locations</option>
+                  <option value="San Francisco">San Francisco, CA</option>
+                  <option value="New York">New York, NY</option>
+                  <option value="Austin">Austin, TX</option>
+                  <option value="London">London, UK</option>
+                </select>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Main Grid -->
+          <div class="flex-grow">
+            <div class="flex justify-between items-center mb-6">
+              <span id="explore-results-count" class="text-sm font-semibold text-on-surface-variant">Showing 6 Events</span>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="text-on-surface-variant">Sort by:</span>
+                <select id="sort-select" onchange="applyFilters()" class="bg-white border border-outline-variant/30 rounded-lg py-1 px-3 text-sm focus:ring-2 focus:ring-primary/20">
+                  <option value="popular">Most Popular</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="date">Date</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="explore-events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- Dynamically populated event cards -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 3. EVENT DETAILS VIEW -->
+    <section id="view-event-details" class="view-screen">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8">
+        <button onclick="navigateTo('explore')" class="inline-flex items-center gap-2 text-primary font-label-md mb-6 hover:underline">
+          <span class="material-symbols-outlined">arrow_back</span>
+          <span>Back to Explore Events</span>
+        </button>
+
+        <div id="event-detail-content">
+          <!-- Injected dynamically based on selected event -->
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 4. ORGANIZER DASHBOARD VIEW -->
+    <section id="view-dashboard" class="view-screen">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-primary">Organizer Workspace</span>
+            <h1 class="font-display-lg text-3xl font-extrabold text-on-surface">Eventix Dashboard</h1>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="openCreateEventModal()" class="brand-gradient-bg text-white px-5 py-2.5 rounded-xl font-label-md shadow-md flex items-center gap-2 hover:scale-105 transition-transform">
+              <span class="material-symbols-outlined text-[20px]">add</span>
+              <span>Create New Event</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dashboard Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <div class="bg-white p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-sm font-semibold text-on-surface-variant">Total Ticket Sales</span>
+              <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <span class="material-symbols-outlined">confirmation_number</span>
+              </div>
+            </div>
+            <p class="text-3xl font-extrabold text-on-surface" id="stat-tickets-count">1,842</p>
+            <span class="text-xs text-emerald-600 font-bold flex items-center gap-1 mt-2">
+              <span class="material-symbols-outlined text-xs">trending_up</span> +14.2% from last month
+            </span>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-sm font-semibold text-on-surface-variant">Gross Revenue</span>
+              <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <span class="material-symbols-outlined">payments</span>
+              </div>
+            </div>
+            <p class="text-3xl font-extrabold text-on-surface" id="stat-revenue-total">$342,850</p>
+            <span class="text-xs text-emerald-600 font-bold flex items-center gap-1 mt-2">
+              <span class="material-symbols-outlined text-xs">trending_up</span> +22.8% from last month
+            </span>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-sm font-semibold text-on-surface-variant">Active Attendees</span>
+              <div class="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
+                <span class="material-symbols-outlined">groups</span>
+              </div>
+            </div>
+            <p class="text-3xl font-extrabold text-on-surface">1,720</p>
+            <span class="text-xs text-on-surface-variant font-medium mt-2 block">Across 4 live events</span>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-sm font-semibold text-on-surface-variant">Average Rating</span>
+              <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
+                <span class="material-symbols-outlined">star</span>
+              </div>
+            </div>
+            <p class="text-3xl font-extrabold text-on-surface">4.9 / 5.0</p>
+            <span class="text-xs text-amber-600 font-bold mt-2 block">based on 620 reviews</span>
+          </div>
+        </div>
+
+        <!-- Managed Events Table -->
+        <div class="bg-white rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden mb-10">
+          <div class="p-6 border-b border-outline-variant/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h3 class="font-headline-md text-xl font-bold text-on-surface">Your Events</h3>
+              <p class="text-sm text-on-surface-variant">Manage registrations, check-in status, and ticket tiers</p>
+            </div>
+            <input type="text" id="dashboard-search-event" oninput="filterDashboardEvents()" class="bg-surface border border-outline-variant/30 rounded-xl text-sm px-4 py-2 w-full sm:w-64 focus:ring-2 focus:ring-primary/20" placeholder="Filter events..."/>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-surface text-xs uppercase tracking-wider text-on-surface-variant border-b border-outline-variant/20">
+                  <th class="p-4 pl-6">Event Name</th>
+                  <th class="p-4">Category</th>
+                  <th class="p-4">Date</th>
+                  <th class="p-4">Tickets Sold</th>
+                  <th class="p-4">Revenue</th>
+                  <th class="p-4">Status</th>
+                  <th class="p-4 pr-6 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-events-tbody" class="divide-y divide-outline-variant/10 text-sm">
+                <!-- Dynamically generated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 5. PLATFORM FEATURES VIEW -->
+    <section id="view-features" class="view-screen">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <span class="text-xs uppercase tracking-widest text-primary font-bold bg-primary/10 px-3 py-1 rounded-full">Next-Gen Architecture</span>
+          <h1 class="font-display-lg text-4xl sm:text-5xl font-extrabold text-on-surface mt-4 mb-4">Built for Next-Level Event Creators</h1>
+          <p class="text-lg text-on-surface-variant">From intimate VIP masterclasses to 50,000+ attendee music festivals, Eventix gives you enterprise-grade infrastructure.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-white p-8 rounded-2xl border border-outline-variant/30 shadow-sm hover:shadow-xl transition-all">
+            <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-3xl">qr_code_scanner</span>
+            </div>
+            <h3 class="font-headline-md text-xl font-bold mb-3">Lightning Scan Check-in</h3>
+            <p class="text-on-surface-variant text-sm leading-relaxed">Process over 50 attendees per minute with our high-speed mobile check-in app supporting offline sync and multi-gate access control.</p>
+          </div>
+
+          <div class="bg-white p-8 rounded-2xl border border-outline-variant/30 shadow-sm hover:shadow-xl transition-all">
+            <div class="w-14 h-14 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-3xl">query_stats</span>
+            </div>
+            <h3 class="font-headline-md text-xl font-bold mb-3">Predictive Sales Analytics</h3>
+            <p class="text-on-surface-variant text-sm leading-relaxed">ML-driven forecasting predicts ticket sell-outs, recommends dynamic pricing adjustments, and tracks referral traffic sources.</p>
+          </div>
+
+          <div class="bg-white p-8 rounded-2xl border border-outline-variant/30 shadow-sm hover:shadow-xl transition-all">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+            </div>
+            <h3 class="font-headline-md text-xl font-bold mb-3">Instant Payouts</h3>
+            <p class="text-on-surface-variant text-sm leading-relaxed">Direct deposit revenue to your bank account within 24 hours of ticket sale. Multi-currency support across 130+ countries.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 6. PRICING PLANS VIEW -->
+    <section id="view-pricing" class="view-screen">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <span class="text-xs uppercase tracking-widest text-primary font-bold bg-primary/10 px-3 py-1 rounded-full">Transparent Pricing</span>
+          <h1 class="font-display-lg text-4xl font-extrabold text-on-surface mt-4 mb-4">Simple Plans that Scale With You</h1>
+          <p class="text-lg text-on-surface-variant">No hidden fees. Pay as you sell or choose a monthly plan with lowered ticket commission rates.</p>
+          
+          <!-- Monthly/Annual Toggle -->
+          <div class="inline-flex items-center gap-3 bg-surface-container p-1.5 rounded-full mt-8 border border-outline-variant/20">
+            <button id="toggle-monthly" onclick="setBillingCycle('monthly')" class="px-5 py-2 rounded-full font-label-md text-sm font-bold bg-white text-primary shadow-sm transition-all">Monthly Billing</button>
+            <button id="toggle-annual" onclick="setBillingCycle('annual')" class="px-5 py-2 rounded-full font-label-md text-sm font-bold text-on-surface-variant hover:text-primary transition-all flex items-center gap-1">
+              <span>Annual Billing</span>
+              <span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-bold">Save 20%</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Free Plan -->
+          <div class="bg-white p-8 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="font-headline-md text-2xl font-bold text-on-surface mb-2">Free Starter</h3>
+              <p class="text-sm text-on-surface-variant mb-6">Perfect for free community meetups and non-profit events.</p>
+              <div class="mb-8">
+                <span class="text-4xl font-extrabold text-on-surface">$0</span>
+                <span class="text-on-surface-variant text-sm"> / forever</span>
+              </div>
+              <ul class="space-y-4 text-sm text-on-surface border-t border-outline-variant/20 pt-6">
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> Free ticket registration</li>
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> Basic attendee check-in app</li>
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> Unlimited event creation</li>
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-gray-300">close</span> Custom domain branding</li>
+              </ul>
+            </div>
+            <button onclick="navigateTo('signup')" class="w-full mt-8 border border-primary text-primary py-3 rounded-xl font-label-md hover:bg-primary/5 transition-all">Get Started Free</button>
+          </div>
+
+          <!-- Professional Plan -->
+          <div class="bg-white p-8 rounded-2xl border-2 border-primary shadow-2xl relative flex flex-col justify-between">
+            <span class="absolute -top-3 left-1/2 -translate-x-1/2 brand-gradient-bg text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">Most Popular</span>
+            <div>
+              <h3 class="font-headline-md text-2xl font-bold text-on-surface mb-2">Pro Organizer</h3>
+              <p class="text-sm text-on-surface-variant mb-6">Designed for professional event hosts, festivals, and venues.</p>
+              <div class="mb-8">
+                <span id="price-pro-val" class="text-4xl font-extrabold text-primary">$49</span>
+                <span class="text-on-surface-variant text-sm" id="price-pro-cycle"> / month</span>
+              </div>
+              <ul class="space-y-4 text-sm text-on-surface border-t border-outline-variant/20 pt-6">
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> 2.5% + $0.99 per ticket fee</li>
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> Real-time sales analytics dashboard</li>
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> Custom promo codes & VIP tiers</li>
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> Automated email broadcasts</li>
+              </ul>
+            </div>
+            <button onclick="navigateTo('signup')" class="w-full mt-8 brand-gradient-bg text-white py-3 rounded-xl font-label-md shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">Start 14-Day Free Trial</button>
+          </div>
+
+          <!-- Enterprise Plan -->
+          <div class="bg-white p-8 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="font-headline-md text-2xl font-bold text-on-surface mb-2">Enterprise</h3>
+              <p class="text-sm text-on-surface-variant mb-6">Custom white-label solutions for large multi-venue events.</p>
+              <div class="mb-8">
+                <span class="text-4xl font-extrabold text-on-surface">Custom</span>
+              </div>
+              <ul class="space-y-4 text-sm text-on-surface border-t border-outline-variant/20 pt-6">
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> Volume fee discounts</li>
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> Dedicated Account Manager</li>
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> Custom API & Webhook integrations</li>
+                <li class="flex items-center gap-3"><span class="material-symbols-outlined text-green-500">check</span> SLA 99.99% uptime guarantee</li>
+              </ul>
+            </div>
+            <button onclick="navigateTo('contact')" class="w-full mt-8 border border-outline-variant/40 text-on-surface py-3 rounded-xl font-label-md hover:bg-surface-container transition-all">Contact Sales</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 7. ABOUT VIEW -->
+    <section id="view-about" class="view-screen">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
+        <div class="max-w-3xl mx-auto text-center mb-12">
+          <h1 class="font-display-lg text-4xl font-extrabold mb-4">Reimagining Live Experiences</h1>
+          <p class="text-lg text-on-surface-variant leading-relaxed">Eventix was founded with a single mission: to empower visionaries to create unforgettable gatherings with effortless technology.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 8. CONTACT VIEW -->
+    <section id="view-contact" class="view-screen">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
+        <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl border border-outline-variant/30 shadow-xl">
+          <h1 class="font-display-lg text-3xl font-extrabold text-on-surface mb-2">Get in Touch</h1>
+          <p class="text-on-surface-variant text-sm mb-6">Have a question or need enterprise assistance? Send us a message.</p>
+
+          <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Your Name</label>
+              <input type="text" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Jane Doe"/>
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Email Address</label>
+              <input type="email" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="jane@company.com"/>
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Message</label>
+              <textarea rows="4" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="How can we help you?"></textarea>
+            </div>
+            <button type="submit" class="w-full brand-gradient-bg text-white py-3 rounded-xl font-label-md font-bold shadow-md hover:scale-[1.01] transition-transform">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 9. LOGIN VIEW -->
+    <section id="view-login" class="view-screen">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 flex justify-center">
+        <div class="w-full max-w-md bg-white p-8 rounded-2xl border border-outline-variant/30 shadow-2xl">
+          <div class="text-center mb-8">
+            <div class="w-12 h-12 rounded-2xl brand-gradient-bg flex items-center justify-center text-white font-bold text-2xl mx-auto mb-3">E</div>
+            <h1 class="font-display-lg text-2xl font-extrabold text-on-surface">Welcome Back</h1>
+            <p class="text-xs text-on-surface-variant mt-1">Sign in to manage your events or view purchased tickets</p>
+          </div>
+
+          <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-on-surface-variant mb-1">Email Address</label>
+              <input id="login-email" type="email" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="organizer@eventix.com"/>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-on-surface-variant mb-1">Password</label>
+              <input id="login-password" type="password" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="••••••••"/>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="rounded text-primary focus:ring-primary/20"/>
+                <span>Remember me</span>
+              </label>
+              <a href="#" class="text-primary hover:underline font-bold">Forgot password?</a>
+            </div>
+            <button type="submit" class="w-full brand-gradient-bg text-white py-3 rounded-xl font-label-md font-bold shadow-md hover:scale-[1.01] transition-transform">Sign In</button>
+          </form>
+
+          <p class="text-xs text-center text-on-surface-variant mt-6">Don't have an account? <a href="#signup" onclick="navigateTo('signup')" class="text-primary font-bold hover:underline">Sign up</a></p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 10. SIGN UP VIEW -->
+    <section id="view-signup" class="view-screen">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 flex justify-center">
+        <div class="w-full max-w-md bg-white p-8 rounded-2xl border border-outline-variant/30 shadow-2xl">
+          <div class="text-center mb-6">
+            <div class="w-12 h-12 rounded-2xl brand-gradient-bg flex items-center justify-center text-white font-bold text-2xl mx-auto mb-3">E</div>
+            <h1 class="font-display-lg text-2xl font-extrabold text-on-surface">Create Eventix Account</h1>
+            <p class="text-xs text-on-surface-variant mt-1">Join thousands of visionary event organizers</p>
+          </div>
+
+          <form onsubmit="handleSignupSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-on-surface-variant mb-1">Full Name</label>
+              <input id="signup-name" type="text" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Alex Morgan"/>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-on-surface-variant mb-1">Email Address</label>
+              <input id="signup-email" type="email" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="alex@eventix.com"/>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-on-surface-variant mb-1">Password</label>
+              <input type="password" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="••••••••"/>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-on-surface-variant mb-1">Account Role</label>
+              <select id="signup-role" class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20">
+                <option value="Event Organizer">Event Organizer</option>
+                <option value="Event Attendee">Event Attendee</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full brand-gradient-bg text-white py-3 rounded-xl font-label-md font-bold shadow-md hover:scale-[1.01] transition-transform">Create Account</button>
+          </form>
+
+          <p class="text-xs text-center text-on-surface-variant mt-6">Already have an account? <a href="#login" onclick="navigateTo('login')" class="text-primary font-bold hover:underline">Log in</a></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Ticket Checkout Modal -->
+  <div id="ticket-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl border border-outline-variant/30 shadow-2xl p-6 relative animate-scale-up">
+      <button onclick="closeTicketModal()" class="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-primary">Book Tickets</span>
+        <h3 id="modal-event-title" class="font-headline-md text-2xl font-bold text-on-surface mt-1">Global AI Summit 2024</h3>
+        <p id="modal-event-date" class="text-xs text-on-surface-variant mt-1">Oct 24, 2024 • San Francisco, CA</p>
+      </div>
+
+      <div class="space-y-4 mb-6">
+        <label class="block text-xs font-bold uppercase text-on-surface-variant">Select Ticket Tier</label>
+        
+        <div onclick="selectTicketTier('General', 99)" class="ticket-tier-option p-4 rounded-xl border-2 border-primary bg-primary/5 cursor-pointer flex justify-between items-center" id="tier-general">
+          <div>
+            <h4 class="font-bold text-on-surface text-sm">General Admission</h4>
+            <p class="text-xs text-on-surface-variant">Standard access to all main stage sessions & expo hall</p>
+          </div>
+          <span class="font-bold text-primary text-base">$99.00</span>
+        </div>
+
+        <div onclick="selectTicketTier('VIP', 299)" class="ticket-tier-option p-4 rounded-xl border border-outline-variant/30 hover:border-primary/50 cursor-pointer flex justify-between items-center" id="tier-vip">
+          <div>
+            <h4 class="font-bold text-on-surface text-sm">VIP Executive Pass</h4>
+            <p class="text-xs text-on-surface-variant">Front row seating, VIP lounge access & networking dinner</p>
+          </div>
+          <span class="font-bold text-primary text-base">$299.00</span>
+        </div>
+      </div>
+
+      <!-- Quantity Selector -->
+      <div class="flex items-center justify-between border-t border-b border-outline-variant/20 py-4 mb-6">
+        <span class="font-label-md text-sm font-bold">Quantity</span>
+        <div class="flex items-center gap-3 bg-surface-container rounded-lg px-3 py-1">
+          <button onclick="adjustQuantity(-1)" class="text-lg font-bold text-on-surface hover:text-primary">-</button>
+          <span id="ticket-qty-display" class="font-bold text-sm w-4 text-center">1</span>
+          <button onclick="adjustQuantity(1)" class="text-lg font-bold text-on-surface hover:text-primary">+</button>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="flex justify-between items-center mb-6">
+        <span class="text-sm font-bold text-on-surface-variant">Total Amount:</span>
+        <span id="ticket-total-display" class="text-2xl font-extrabold text-primary">$99.00</span>
+      </div>
+
+      <button onclick="confirmTicketCheckout()" class="w-full brand-gradient-bg text-white py-3.5 rounded-xl font-label-md font-bold shadow-lg shadow-primary/20 hover:scale-[1.01] transition-transform">Complete Registration</button>
+    </div>
+  </div>
+
+  <!-- Create Event Modal -->
+  <div id="create-event-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl border border-outline-variant/30 shadow-2xl p-6 relative">
+      <button onclick="closeCreateEventModal()" class="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <h3 class="font-headline-md text-2xl font-bold text-on-surface mb-4">Create New Event</h3>
+      <form onsubmit="handleCreateEventSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-on-surface-variant mb-1">Event Title</label>
+          <input id="new-event-title" type="text" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="e.g. NextGen Web3 Summit"/>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant mb-1">Category</label>
+            <select id="new-event-category" class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20">
+              <option value="Tech">Tech</option>
+              <option value="Music">Music</option>
+              <option value="Business">Business</option>
+              <option value="Lifestyle">Lifestyle</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant mb-1">Ticket Price ($)</label>
+            <input id="new-event-price" type="number" min="0" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="199"/>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-on-surface-variant mb-1">Location</label>
+          <input id="new-event-location" type="text" required class="w-full border border-outline-variant/40 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="San Francisco, CA"/>
+        </div>
+        <button type="submit" class="w-full brand-gradient-bg text-white py-3 rounded-xl font-label-md font-bold shadow-md">Publish Event</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Global Footer -->
+  <footer class="bg-on-surface text-white pt-16 pb-12 mt-auto border-t border-outline-variant/10">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+        <div class="space-y-4">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg brand-gradient-bg flex items-center justify-center text-white font-bold">E</div>
+            <span class="font-display-lg text-xl font-bold text-white">Eventix</span>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed">The premier event management infrastructure designed for creators, organizers, and modern visionaries worldwide.</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-sm mb-4 text-white">Navigation</h4>
+          <ul class="space-y-2 text-xs text-gray-400">
+            <li><a href="#explore" onclick="navigateTo('explore')" class="hover:text-white transition-colors">Explore Events</a></li>
+            <li><a href="#features" onclick="navigateTo('features')" class="hover:text-white transition-colors">Platform Features</a></li>
+            <li><a href="#pricing" onclick="navigateTo('pricing')" class="hover:text-white transition-colors">Pricing Plans</a></li>
+            <li><a href="#about" onclick="navigateTo('about')" class="hover:text-white transition-colors">About Eventix</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-sm mb-4 text-white">Categories</h4>
+          <ul class="space-y-2 text-xs text-gray-400">
+            <li><a href="#explore" onclick="filterCategoryAndNavigate('Tech')" class="hover:text-white transition-colors">Tech Conferences</a></li>
+            <li><a href="#explore" onclick="filterCategoryAndNavigate('Music')" class="hover:text-white transition-colors">Music Festivals</a></li>
+            <li><a href="#explore" onclick="filterCategoryAndNavigate('Business')" class="hover:text-white transition-colors">Business Summits</a></li>
+            <li><a href="#explore" onclick="filterCategoryAndNavigate('Lifestyle')" class="hover:text-white transition-colors">Art & Lifestyle</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-sm mb-4 text-white">Newsletter</h4>
+          <p class="text-xs text-gray-400 mb-3">Subscribe to receive curated weekly events.</p>
+          <div class="flex gap-2">
+            <input type="email" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs w-full text-white placeholder:text-gray-500 focus:outline-none focus:border-primary" placeholder="Enter your email"/>
+            <button onclick="showToast('Subscribed to Eventix newsletter!')" class="brand-gradient-bg px-4 py-2 rounded-lg text-xs font-bold shrink-0">Join</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500 gap-4">
+        <p>© 2026 Eventix Platform. Built with Stitch AI. All rights reserved.</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-gray-300">Privacy Policy</a>
+          <a href="#" class="hover:text-gray-300">Terms of Service</a>
+          <a href="#" class="hover:text-gray-300">Cookie Settings</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
